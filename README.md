@@ -1,0 +1,64 @@
+# Snobbin API
+
+## Project Layout (hexigonal architecture)
+- application - inputs
+  - controllers
+    - SnobController
+    - SnobGroupController
+- domain - no framework dependencies
+  - snobs
+    - SnobService
+    - snobModels
+    - SnobStorage
+  - snobgroups
+    - snobGroupModels
+    - SnobGroupService
+    - SnobGroupStorage
+  - search
+    - SearchService
+  - common
+    - SecurityService
+    - securityModels
+    - exceptions
+    - utils
+- infrastructure - outputs
+  - config
+    - SecurityConfig
+    - AudienceValidator
+  - security
+    - SecurityServiceImpl
+  - search
+    - SearchServiceImpl
+  - storage
+    - snobs
+      - entities
+        - SnobEntity 
+      - repositories
+        - SnobRepository 
+      - SnobStorageImpl
+    - snobgroups
+      - entities 
+        - SnobGroupEntity
+        - SnobGroupMemberEntity
+      - repositories 
+        - SnobGroupRepository
+        - SnobGroupMemberRepository
+      - SnobGroupStorageImpl
+
+## Object Hierarchy
+- Snob
+- SnobGroups
+  - SnobGroupMembers
+  - RankingItems
+    - Rankings
+    - RankingItemAttributes
+      - id
+      - item_id
+      - attribute_id
+      - attribute_value
+  - SnobGroupAttributes
+    - id
+    - group_id
+    - name
+- Metadata
+- Notifications

@@ -1,0 +1,149 @@
+type Snob {
+    id: ID!
+    email: String!
+    firstName: String
+    lastName: String
+}
+
+input SnobUpdate {
+    firstName: String!
+    lastName: String!
+}
+
+type SnobGroupAttribute {
+    id: ID!
+    name: String!
+}
+
+type SnobGroup {
+    id: ID!
+    name: String!
+    description: String!
+    minRanking: Int!
+    maxRanking: Int!
+    increments: Float!
+    rankIcon: String!
+    rankingsRequired: Int
+    rankingItems: [RankingItem]
+    groupMembers: [GroupMember]
+    groupInvites: [SnobGroupInvite]
+    attributes: [SnobGroupAttribute]
+}
+
+type GroupMember {
+    id: ID!
+    groupId: String!
+    snobId: String!,
+    role: String!
+    snob: Snob
+}
+
+input SnobGroupAttributeUpdate {
+    id: ID
+    name: String!
+}
+
+input SnobGroupUpdate {
+    name: String!
+    description: String!
+    minRanking: Int!
+    maxRanking: Int!
+    increments: Float!
+    rankIcon: String!
+    rankingsRequired: Int
+    attributes: [SnobGroupAttributeUpdate]
+}
+
+type RankingItemAttribute {
+    id: ID!
+    attributeId: String!
+    attributeValue: String!
+}
+
+type RankingItem {
+    id: ID!
+    groupId: String!
+    description: String!
+    ranked: Boolean
+    averageRanking: Float
+    attributes: [RankingItemAttribute]
+}
+
+type RankingItemResults {
+    total: Int!
+    pages: Int!
+    items: [RankingItem]
+}
+
+input RankingItemAttributeUpdate {
+    id: String
+    attributeId: String!
+    attributeValue: String!
+}
+
+input RankingItemUpdate {
+    description: String!
+    attributes: [RankingItemAttributeUpdate]
+}
+
+type Ranking {
+    id: ID!
+    itemId: String!
+    groupMemberId: String!
+    rank: Float!
+    notes: String
+}
+
+input RankingUpdate {
+    rank: Float!
+    notes: String
+}
+
+input SnobGroupInviteRequest {
+    groupId: String!
+    email: String!
+}
+
+type SnobGroupInvite {
+    id: String!
+    groupId: String!
+    email: String!
+    status: String!
+    group: SnobGroup
+}
+
+enum RankingSortBy {
+    AVERAGE_RANKING
+    DESCRIPTION
+}
+
+enum RankingSortDirection {
+    ASC
+    DESC
+}
+
+type Query {
+    userInfo: Snob
+    myGroups: [SnobGroup]
+    getRankingItems(groupId: String!): [RankingItem]
+    searchRankingItems(groupId: String!, keyword: String!, page: Float!, limit: Float!, sort: RankingSortBy, dir: RankingSortDirection): RankingItemResults
+    getRankings(itemId: String!): [Ranking]
+    getPendingGroupInvites: [SnobGroupInvite]
+}
+
+type Mutation {
+    updateSnobInfo(snobUpdate: SnobUpdate!): Snob!
+    createGroup(snobGroupUpdate: SnobGroupUpdate!): SnobGroup!
+    updateGroup(id: String!, snobGroupUpdate: SnobGroupUpdate!): SnobGroup!
+    deleteGroup(id: String!): SnobGroup!
+    createRankingItem(groupId: String!, rankingItemUpdate: RankingItemUpdate): RankingItem!
+    updateRankingItem(id: String!, rankingItemUpdate: RankingItemUpdate): RankingItem!
+    deleteRankingItem(id: String!): RankingItem!
+    createRanking(itemId: String!, rankingUpdate: RankingUpdate): Ranking!
+    updateRanking(id: String!, rankingUpdate: RankingUpdate): Ranking!
+    deleteRanking(id: String!): Ranking!
+    createGroupInvite(snobGroupInviteRequest: SnobGroupInviteRequest!): SnobGroupInvite!
+    deleteGroupInvite(id: String!): SnobGroupInvite!
+    acceptGroupInvite(id: String!): SnobGroupInvite!
+    declineGroupInvite(id: String!): SnobGroupInvite!
+}

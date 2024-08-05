@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5433/snobbin?schema=public
+    username: crud
+    password: crud
+  liquibase:
+    enabled: true
+    user: admin
+    password: admin
+    contexts: local
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev--hkrho7z.us.auth0.com/
+  graphql:
+    graphiql:
+      enabled: true
+
+auth0:
+  audience: https://dev--hkrho7z.us.auth0.com/api/v2/
