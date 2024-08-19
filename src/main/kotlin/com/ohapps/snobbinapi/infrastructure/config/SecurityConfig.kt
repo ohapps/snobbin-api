@@ -65,6 +65,7 @@ class SecurityConfig(
         config.allowCredentials = true
         config.addAllowedOrigin("http://localhost:3000")
         config.addAllowedOrigin("https://snobbin-ui.vercel.app")
+        config.addAllowedOrigin("https://web.snobbin.us")
         config.addAllowedHeader("*")
         config.addAllowedMethod("*")
         source.registerCorsConfiguration("/**", config)
