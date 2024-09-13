@@ -9,4 +9,5 @@ import java.util.*
 interface RankingRepository : JpaRepository<RankingEntity, UUID> {
     fun findAllByItemId(itemId: UUID): List<RankingEntity>
     fun findByItemIdAndGroupMemberId(itemId: UUID, groupMemberId: UUID): RankingEntity?
+    fun deleteByItemId(itemId: UUID)
 }

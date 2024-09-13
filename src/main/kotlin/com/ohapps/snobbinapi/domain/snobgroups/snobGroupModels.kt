@@ -193,7 +193,8 @@ data class RankingUpdate(
 
 enum class RankingSortBy(val column: String) {
     AVERAGE_RANKING("average_ranking"),
-    DESCRIPTION("description")
+    DESCRIPTION("description"),
+    RANKED("ranked")
 }
 
 enum class RankingSortDirection {

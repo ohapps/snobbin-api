@@ -6,6 +6,7 @@ import com.ohapps.snobbinapi.infrastructure.storage.snobgroups.repositories.*
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
@@ -32,7 +33,9 @@ class SnobGroupStorageImpl(
         rankingItemRepository.save(RankingItemEntity.from(rankingItem))
     }
 
+    @Transactional
     override fun deleteRankingItem(rankingItem: RankingItem) {
+        rankingRepository.deleteByItemId(rankingItem.id)
         rankingItemRepository.delete(RankingItemEntity.from(rankingItem))
     }
 
@@ -41,13 +44,37 @@ class SnobGroupStorageImpl(
     override fun findRankingItemsByGroup(groupId: UUID): List<RankingItem> =
         rankingItemRepository.findAllByGroupId(groupId).map { it.toModel() }
 
-    override fun searchRankingItemsByGroup(groupId: UUID, keyword: String, page: Int, limit: Int, sort: RankingSortBy?, dir: RankingSortDirection?): RankingItemResults {
+    override fun searchRankingItemsByGroup(
+        groupId: UUID,
+        keyword: String,
+        page: Int,
+        limit: Int,
+        sort: RankingSortBy?,
+        dir: RankingSortDirection?,
+    ): RankingItemResults {
+        val averageRankingDesc = Sort.by(
+            listOf(
+                Sort.Order(Sort.Direction.ASC, RankingSortBy.RANKED.column),
+                Sort.Order(Sort.Direction.DESC, RankingSortBy.AVERAGE_RANKING.column),
+                Sort.Order(Sort.Direction.ASC, RankingSortBy.DESCRIPTION.column),
+            ),
+        )
+        val averageRankingAsc = Sort.by(
+            listOf(
+                Sort.Order(Sort.Direction.DESC, RankingSortBy.RANKED.column),
+                Sort.Order(Sort.Direction.ASC, RankingSortBy.AVERAGE_RANKING.column),
+                Sort.Order(Sort.Direction.ASC, RankingSortBy.DESCRIPTION.column),
+            ),
+        )
         val sortBy = when {
+            sort == RankingSortBy.AVERAGE_RANKING && dir == RankingSortDirection.DESC -> averageRankingDesc
+            sort == RankingSortBy.AVERAGE_RANKING && dir == RankingSortDirection.ASC -> averageRankingAsc
             sort != null && dir == RankingSortDirection.ASC -> Sort.by(sort.column).ascending()
             sort != null && dir == RankingSortDirection.DESC -> Sort.by(sort.column).descending()
-            else -> Sort.by(RankingSortBy.AVERAGE_RANKING.column).descending()
+            else -> averageRankingDesc
         }
-        val results = rankingItemRepository.searchByGroupIdAndKeyword(groupId, "%$keyword%", PageRequest.of(page, limit, sortBy))
+        val results =
+            rankingItemRepository.searchByGroupIdAndKeyword(groupId, "%$keyword%", PageRequest.of(page, limit, sortBy))
         return RankingItemResults(
             total = results.totalElements,
             pages = results.totalPages,
